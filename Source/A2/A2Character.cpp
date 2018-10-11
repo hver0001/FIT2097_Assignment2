@@ -297,6 +297,8 @@ bool AA2Character::EnableTouchscreenMovement(class UInputComponent* PlayerInputC
 void AA2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AA2Character, CurrentHealth);
 }
 
 //Function called when the button is pressed for action

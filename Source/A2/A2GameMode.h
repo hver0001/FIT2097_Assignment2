@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Engine.h"
 #include "GameFramework/GameModeBase.h"
 #include "A2GameMode.generated.h"
 
@@ -13,6 +13,37 @@ class AA2GameMode : public AGameModeBase
 
 public:
 	AA2GameMode();
+
+	//Start the life level decrease timer at beginning of game
+	virtual void BeginPlay() override;
+
+	//Get the starting health
+	UFUNCTION(BlueprintPure, Category = "Health")
+		float GetStartingHealth();
+
+	//Get the current rate of health decay
+	UFUNCTION(BlueprintPure, Category = "Health")
+		float GetHealthRate();
+
+protected:
+	//Stores the rate of the delay that the characters will experience (how often to update)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")
+		float HealthDrainDelay;
+
+	//Access to the timer for draining the health
+	FTimerHandle HealthDrainTimer;
+
+	//Stores the amount of health a player loses each second
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health", Meta = (BlueprintProtected = "true"))
+		float StartingHealth;
+
+	//Stores the amount of health a player loses each second
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health", Meta = (BlueprintProtected = "true"))
+		float HealthRate;
+
+private:
+	//Drains health from characters and updates gameplay
+	void DrainHealthOverTime();
 };
 
 
