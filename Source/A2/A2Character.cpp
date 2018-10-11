@@ -325,8 +325,23 @@ void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
 {
 	if (Role == ROLE_Authority) {
 
+		//Activates object
 		if (object != NULL) {
 			object->SetActive(!object->IsActive());
+		}
+
+		//Check if the object is an item
+		if (AItem* item = Cast<AItem>(object)) {
+			//Get the item type of the object
+			EItemTypes itemType = item->GetItemType();
+
+			//If it is a health item
+			if (itemType == EItemTypes::Health) {
+				float healthBoost = item->GetItemValue();
+
+				//Increase health
+				UpdateHealth(healthBoost);
+			}
 		}
 	}
 }
@@ -449,7 +464,7 @@ void AA2Character::ProcessTraceHit(FHitResult& HitOut)
 {
 	ClearTraceInfo(); //Clears all current selected traces, to allow a new set of traced variables
 
-					  //Check to see if trace hit is a an interactable object
+	//Check to see if trace hit is a an interactable object
 	if (AInteractable* const TestObject = Cast<AInteractable>(HitOut.GetActor()))
 	{
 		// Keep a pointer to the Item

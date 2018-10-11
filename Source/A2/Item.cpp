@@ -40,7 +40,7 @@ void AItem::SetActive(bool NewState) {
 	{
 		//Sets the lifespan of the item before the object is destroyed (in seconds)
 		//This gives clients time to play VFX and sounds, etc, before destroying item
-		SetLifeSpan(1.0f);
+		SetLifeSpan(0.01f);
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "GameFramework/Character.h"
 #include "Interactable.h"
+#include "Item.h"
 #include "A2Character.generated.h"
 
 class UInputComponent;
