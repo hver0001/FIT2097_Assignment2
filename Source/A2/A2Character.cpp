@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -82,6 +83,19 @@ AA2Character::AA2Character()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+
+
+
+
+
+	///////////////////////////////////////////////////
+	// NEW CODE ADDED FOR ASSIGNMENT 2 FUNCTIONALITY //
+	///////////////////////////////////////////////////
+
+	if (Role == ROLE_Authority) {
+		CurrentInteractable = NULL;
+	}
 }
 
 void AA2Character::BeginPlay()
@@ -136,6 +150,9 @@ void AA2Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("TurnRate", this, &AA2Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AA2Character::LookUpAtRate);
+
+	//Input for button functionality
+	InputComponent->BindAction("Action", IE_Pressed, this, &AA2Character::CheckAction);
 }
 
 void AA2Character::OnFire()
@@ -254,4 +271,191 @@ bool AA2Character::EnableTouchscreenMovement(class UInputComponent* PlayerInputC
 	}
 	
 	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////
+//	NEW CODED ADDED FOR ASSIGNMENT 2 FUNCTIONALITY    //
+////////////////////////////////////////////////////////
+
+//Network code for saving variables
+void AA2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+//Function called when the button is pressed for action
+void AA2Character::CheckAction()
+{
+	ServerCheckAction(CurrentInteractable);
+}
+
+//This value is called before the implementation of the interactable function
+//Checks for bad data or failed networking. In most cases, returns true
+bool AA2Character::ServerCheckAction_Validate(AInteractable* object)
+{
+	return true;
+}
+
+//Implements code from checking actions
+//NOTE: Both this and the function above are not defined in the header file as they are created from the base function
+void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
+{
+	if (Role == ROLE_Authority) {
+
+		if (object != NULL) {
+			object->SetActive(!object->IsActive());
+		}
+	}
+}
+
+// Called every frame
+void AA2Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	CallMyTrace();
+
+}
+
+//Runs the trace from the camera to the end distance
+bool AA2Character::Trace(
+	UWorld* World,
+	TArray<AActor*>& ActorsToIgnore,
+	const FVector& Start,
+	const FVector& End,
+	FHitResult& HitOut,
+	ECollisionChannel CollisionChannel = ECC_Pawn,
+	bool ReturnPhysMat = false
+) {
+
+	// The World parameter refers to our game world (map/level) 
+	// If there is no World, abort
+	if (!World)
+	{
+		return false;
+	}
+
+	// Set up our TraceParams object
+	FCollisionQueryParams TraceParams(FName(TEXT("My Trace")), true, ActorsToIgnore[0]);
+
+	// Should we simple or complex collision?
+	TraceParams.bTraceComplex = true;
+
+	// We don't need Physics materials 
+	TraceParams.bReturnPhysicalMaterial = ReturnPhysMat;
+
+	// Add our ActorsToIgnore
+	TraceParams.AddIgnoredActors(ActorsToIgnore);
+
+	// When we're debugging it is really useful to see where our trace is in the world
+	// We can use World->DebugDrawTraceTag to tell Unreal to draw debug lines for our trace
+	// (remove these lines to remove the debug - or better create a debug switch!)
+	const FName TraceTag("MyTraceTag");
+	World->DebugDrawTraceTag = TraceTag;
+	TraceParams.TraceTag = TraceTag;
+
+	// Force clear the HitData which contains our results
+	HitOut = FHitResult(ForceInit);
+
+	// Perform our trace
+	World->LineTraceSingleByChannel
+	(
+		HitOut,				//result
+		Start,				//start
+		End,				//end
+		CollisionChannel,	//collision channel
+		TraceParams
+	);
+
+	// If we hit an actor, return true
+	return (HitOut.GetActor() != NULL);
+}
+
+
+//CallMyTrace() - sets up our parameters and then calls our Trace() function
+void AA2Character::CallMyTrace()
+{
+	// Get the location of the camera (where we are looking from) and the direction we are looking in
+	const FVector Start = FirstPersonCameraComponent->GetComponentLocation();
+	const FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+
+	// How for in front of our character do we want our trace to extend?
+	// ForwardVector is a unit vector, so we multiply by the desired distance
+	const FVector End = Start + ForwardVector * 256;
+
+	// Force clear the HitData which contains our results
+	FHitResult HitData(ForceInit);
+
+	// What Actors do we want our trace to Ignore?
+	TArray<AActor*> ActorsToIgnore;
+
+	//Ignore the player character - so you don't hit yourself!
+	ActorsToIgnore.Add(this);
+
+	// Call our Trace() function with the paramaters we have set up
+	// If it Hits anything
+	if (Trace(GetWorld(), ActorsToIgnore, Start, End, HitData, ECC_Visibility, false))
+	{
+		// Process our HitData
+		if (HitData.GetActor())
+		{
+			//UE_LOG(LogClass, Warning, TEXT("This a testing statement. %s"), *HitData.GetActor()->GetName());
+			ProcessTraceHit(HitData);
+		}
+		else
+		{
+			// The trace did not return an Actor or An error has occurred
+			// Record a message in the error log
+			ClearTraceInfo();
+		}
+	}
+	else
+	{
+		// We did not hit an Actor
+		ClearTraceInfo();
+	}
+}
+
+//ProcessTraceHit() - process our Trace Hit result
+void AA2Character::ProcessTraceHit(FHitResult& HitOut)
+{
+	ClearTraceInfo(); //Clears all current selected traces, to allow a new set of traced variables
+
+					  //Check to see if trace hit is a an interactable object
+	if (AInteractable* const TestObject = Cast<AInteractable>(HitOut.GetActor()))
+	{
+		// Keep a pointer to the Item
+		SetInteractable(TestObject);
+		//CurrentItem = TestPickup;
+
+		// Set a local variable of the PickupName for the HUD
+		TraceName = TestObject->GetInteractableName();
+	}
+}
+
+//Clears previous trace information
+void AA2Character::ClearTraceInfo() {
+	TraceName = "";
+	SetInteractable(NULL);
+}
+
+//Sets the new interactable item
+void AA2Character::SetInteractable(AInteractable* NewInteractable)
+{
+	CurrentInteractable = NewInteractable;
 }

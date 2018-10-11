@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Engine.h"
 #include "GameFramework/Character.h"
+#include "Interactable.h"
 #include "A2Character.generated.h"
 
 class UInputComponent;
@@ -137,6 +138,79 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////
+//	NEW CODED ADDED FOR ASSIGNMENT 2 FUNCTIONALITY    //
+////////////////////////////////////////////////////////
+
+
+public:
+	//Traces from the camera
+	bool Trace(
+		UWorld* World,
+		TArray<AActor*>& ActorsToIgnore,
+		const FVector& Start,
+		const FVector& End,
+		FHitResult& HitOut,
+		ECollisionChannel CollisionChannel,
+		bool ReturnPhysMat
+	);
+
+	//Function that runs through each trace and finds actors 
+	void CallMyTrace();
+
+	//Processes the trace and returns the object hit
+	void ProcessTraceHit(FHitResult& HitOut);
+
+	//Clears all information about previous trace
+	void ClearTraceInfo();
+
+	//Function run every frame
+	virtual void Tick(float DeltaTime) override;
+
+	//Returns the name of the most previously traced item
+	FString TraceName;
+
+	//This function is required for networking
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	/** Third person camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* ThirdPersonCameraComponent;
+
+	/** Returns ThirdPersonCameraComponent subobject **/
+	FORCEINLINE class UCameraComponent* GetThirdPersonCameraComponent() const { return ThirdPersonCameraComponent; }
+
+
+
+protected:
+	//True when the light is on, False when it is off
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interactable", meta = (AllowPrivateAccess = "true"))
+		AInteractable* CurrentInteractable;
+
+	//Change the lamp state
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+		void SetInteractable(AInteractable* NewInteractable);
+
+	//Entry Point which is called when a player presses a key to collect some pickups
+	UFUNCTION(BlueprintCallable, Category = "Action")
+		void CheckAction();
+
+	//Convention is to use Server in front of function to call code only on server
+	//Reliable means that the function MUST be called on both server and client regardless of latency
+	//Server means it will only run on an authority device
+	//WithValidation will create two calls - one to validate and one to call implementation
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerCheckAction(AInteractable* object);
 
 };
 
