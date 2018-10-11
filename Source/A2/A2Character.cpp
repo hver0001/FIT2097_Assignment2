@@ -96,6 +96,8 @@ AA2Character::AA2Character()
 	if (Role == ROLE_Authority) {
 		CurrentInteractable = NULL;
 	}
+
+	MaxHealth = 100.f;
 }
 
 void AA2Character::BeginPlay()
@@ -117,6 +119,9 @@ void AA2Character::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
+
+	//Set the starting health to max
+	CurrentHealth = MaxHealth;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -468,16 +473,10 @@ float AA2Character::GetCurrentHealth()
 	return CurrentHealth;
 }
 
-//Sets the health of the character
-void AA2Character::SetHealth(float NewHealth)
+//Gets the max health of the character
+float AA2Character::GetMaxHealth()
 {
-	if (Role == ROLE_Authority) {
-		//Set the health to a new value
-		CurrentHealth = NewHealth;
-
-		//Fake the rep notify as the listen server will not update automatically
-		OnRep_CurrentHealth();
-	}
+	return MaxHealth;
 }
 
 //Updates the health of the character
@@ -490,6 +489,10 @@ void AA2Character::UpdateHealth(float DeltaHealth)
 		//TODO
 		//Set movement speed based on the health level?
 		//GetCharacterMovement()->MaxWalkSpeed = BaseSpeed + SpeedFactor * CurrentPower;
+
+		//Ensure that the current health is limited by the max health
+		if (CurrentHealth > MaxHealth)
+			CurrentHealth = MaxHealth;
 
 		//Fake the rep notify as the listen server will not update automatically
 		OnRep_CurrentHealth();

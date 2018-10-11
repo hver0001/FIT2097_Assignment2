@@ -187,14 +187,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 		float GetCurrentHealth();
 
+	//Access to the character's max health
+	UFUNCTION(BlueprintPure, Category = "Health")
+		float GetMaxHealth();
+
 	//This updates the character's health
 	//@param DeltaPower - This is the amount to change power by, can be position or negative
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Health")
 		void UpdateHealth(float DeltaHealth);
-
-	//Set the health to a specific value regardless on previous health
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Health")
-		void SetHealth(float NewHealth);
 
 
 
@@ -203,6 +203,10 @@ protected:
 	//Stores the character's health (not editable anywhere else)
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth, VisibleAnywhere, Category = "Health")
 		float CurrentHealth;
+
+	//Stores the character's max health
+	UPROPERTY(VisibleAnywhere, Category = "Health")
+		float MaxHealth;
 
 	//Health is updated on clients
 	UFUNCTION()

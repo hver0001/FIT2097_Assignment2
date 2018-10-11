@@ -40,14 +40,6 @@ void AA2GameMode::BeginPlay() {
 	UWorld* World = GetWorld();
 	check(World);
 
-	//Set the game state max health to the starting health
-	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
-		MyGameState->MaxHealth = StartingHealth;
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("FAILED: GameState failed to be cast in %s!"), *this->GetName());
-	}
-
 	//Go through all the characters in the game using a unreal function
 	for (FConstControllerIterator It = World->GetControllerIterator(); It; ++It) {
 		//Attempt to check for a player controller using a cast
@@ -55,8 +47,15 @@ void AA2GameMode::BeginPlay() {
 			//Attempt to check for a controller using a cast
 			if (AA2Character* Character = Cast<AA2Character>(PlayerController->GetPawn()))
 			{
-				//Run code required for setting starting health variables of each character
-				Character->SetHealth(StartingHealth);
+				//Set the game state max health to the starting health
+				if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
+					MyGameState->MaxHealth = Character->GetMaxHealth();
+				}
+				else {
+					UE_LOG(LogTemp, Error, TEXT("FAILED: GameState failed to be cast in %s!"), *this->GetName());
+				}
+
+				break;
 			}
 		}
 	}
