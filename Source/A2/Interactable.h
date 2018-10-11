@@ -25,7 +25,7 @@ public:
 
 	//This allows other classes to safely change the objects's activation state
 	UFUNCTION(BlueprintCallable, Category = "Interactable")
-		void SetActive(bool NewState);
+		virtual void SetActive(bool NewState);
 
 	//Function to call when pickup is collected
 	//A blueprint native event allows to put some functionality in blueprint and in C++
