@@ -3,6 +3,7 @@
 #include "A2GameMode.h"
 #include "A2HUD.h"
 #include "A2Character.h"
+#include "A2GameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 AA2GameMode::AA2GameMode()
@@ -14,6 +15,12 @@ AA2GameMode::AA2GameMode()
 
 	// use our custom HUD class
 	HUDClass = AA2HUD::StaticClass();
+
+	//Set the GameState used in the game
+	GameStateClass = AA2GameState::StaticClass();
+	if (!GameStateClass) {
+		UE_LOG(LogTemp, Error, TEXT("FAILED: GameState failed to set in %s!"), *this->GetName());
+	}
 
 	//Base health values
 	StartingHealth = 100.f;
