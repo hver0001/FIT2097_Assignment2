@@ -13,8 +13,12 @@ AA2GameMode::AA2GameMode()
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPersonCPP/Blueprints/FirstPersonCharacter"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-	// use our custom HUD class
-	HUDClass = AA2HUD::StaticClass();
+	//Use our custom HUD class
+	//HUDClass = AA2HUD::StaticClass();
+	static ConstructorHelpers::FClassFinder<AA2HUD>PlayerHUDClass(TEXT("/Game/Blueprints/BP_HUD"));
+	if (PlayerHUDClass.Class != NULL) {
+		HUDClass = PlayerHUDClass.Class;
+	}
 
 	//Set the GameState used in the game
 	GameStateClass = AA2GameState::StaticClass();
@@ -35,8 +39,14 @@ void AA2GameMode::BeginPlay() {
 	//Access the world to get the players
 	UWorld* World = GetWorld();
 	check(World);
-	//AA2GameState* MyGameState = Cast<AA2GameState>(GameState);
-	//check(MyGameState);
+
+	//Set the game state max health to the starting health
+	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
+		MyGameState->MaxHealth = StartingHealth;
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("FAILED: GameState failed to be cast in %s!"), *this->GetName());
+	}
 
 	//Go through all the characters in the game using a unreal function
 	for (FConstControllerIterator It = World->GetControllerIterator(); It; ++It) {
@@ -45,7 +55,6 @@ void AA2GameMode::BeginPlay() {
 			//Attempt to check for a controller using a cast
 			if (AA2Character* Character = Cast<AA2Character>(PlayerController->GetPawn()))
 			{
-				//MyGameState->MaxHealth = StartingHealth;
 				//Run code required for setting starting health variables of each character
 				Character->SetHealth(StartingHealth);
 			}
