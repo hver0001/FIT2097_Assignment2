@@ -183,16 +183,31 @@ public:
 	//This function is required for networking
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	/** Third person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* ThirdPersonCameraComponent;
+	//Access to the character's current health
+	UFUNCTION(BlueprintPure, Category = "Health")
+		float GetCurrentHealth();
 
-	/** Returns ThirdPersonCameraComponent subobject **/
-	FORCEINLINE class UCameraComponent* GetThirdPersonCameraComponent() const { return ThirdPersonCameraComponent; }
+	//This updates the character's health
+	//@param DeltaPower - This is the amount to change power by, can be position or negative
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Health")
+		void UpdateHealth(float DeltaHealth);
+
+	//Set the health to a specific value regardless on previous health
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Health")
+		void SetHealth(float NewHealth);
+
 
 
 
 protected:
+	//Stores the character's health (not editable anywhere else)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth, VisibleAnywhere, Category = "Health")
+		float CurrentHealth;
+
+	//Health is updated on clients
+	UFUNCTION()
+		void OnRep_CurrentHealth();
+
 	//True when the light is on, False when it is off
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interactable", meta = (AllowPrivateAccess = "true"))
 		AInteractable* CurrentInteractable;

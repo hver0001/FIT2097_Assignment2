@@ -324,6 +324,12 @@ void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
 	}
 }
 
+//Sets the new interactable item
+void AA2Character::SetInteractable(AInteractable* NewInteractable)
+{
+	CurrentInteractable = NewInteractable;
+}
+
 // Called every frame
 void AA2Character::Tick(float DeltaTime)
 {
@@ -454,8 +460,43 @@ void AA2Character::ClearTraceInfo() {
 	SetInteractable(NULL);
 }
 
-//Sets the new interactable item
-void AA2Character::SetInteractable(AInteractable* NewInteractable)
+//Gets the current health of the character
+float AA2Character::GetCurrentHealth()
 {
-	CurrentInteractable = NewInteractable;
+	return CurrentHealth;
+}
+
+//Sets the health of the character
+void AA2Character::SetHealth(float NewHealth)
+{
+	if (Role == ROLE_Authority) {
+		//Set the health to a new value
+		CurrentHealth = NewHealth;
+
+		//Fake the rep notify as the listen server will not update automatically
+		OnRep_CurrentHealth();
+	}
+}
+
+//Updates the health of the character
+void AA2Character::UpdateHealth(float DeltaHealth)
+{
+	if (Role == ROLE_Authority) {
+		//Increase or decrease the current power
+		CurrentHealth += DeltaHealth;
+
+		//TODO
+		//Set movement speed based on the health level?
+		//GetCharacterMovement()->MaxWalkSpeed = BaseSpeed + SpeedFactor * CurrentPower;
+
+		//Fake the rep notify as the listen server will not update automatically
+		OnRep_CurrentHealth();
+	}
+}
+
+//Called when the server calls a change in health
+void AA2Character::OnRep_CurrentHealth()
+{
+	//UE_LOG(LogClass, Warning, TEXT("Set new health! %s"), *GetName());
+	//Call a blueprint executable event maybe?
 }
