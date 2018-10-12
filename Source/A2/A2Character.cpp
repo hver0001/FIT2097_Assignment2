@@ -98,6 +98,9 @@ AA2Character::AA2Character()
 	}
 
 	MaxHealth = 100.f;
+
+	//Starts the light as active
+	SetLightActive(true);
 }
 
 void AA2Character::BeginPlay()
@@ -158,11 +161,6 @@ void AA2Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 
 	//Input for button functionality
 	InputComponent->BindAction("Action", IE_Pressed, this, &AA2Character::CheckAction);
-}
-
-void AA2Character::OnFire()
-{
-	//UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 }
 
 void AA2Character::OnResetVR()
@@ -304,6 +302,7 @@ void AA2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AA2Character, CurrentHealth);
+	DOREPLIFETIME(AA2Character, bLightActive);
 }
 
 //Function called when the button is pressed for action
@@ -520,3 +519,54 @@ void AA2Character::OnRep_CurrentHealth()
 	//UE_LOG(LogClass, Warning, TEXT("Set new health! %s"), *GetName());
 	//Call a blueprint executable event maybe?
 }
+
+//When the fire button is pressed
+void AA2Character::OnFire()
+{
+	ServerToggleLight();
+}
+
+
+//Gets the current light state
+bool AA2Character::GetLightActive() {
+	return bLightActive;
+}
+
+//Sets the current light state
+void AA2Character::SetLightActive(bool NewState) {
+	bLightActive = NewState;
+	ClientOnToggle();
+}
+
+//Called when the server changes the light state
+void AA2Character::OnRep_LightActive() {
+	//Call a blueprint executable event
+}
+
+bool AA2Character::ServerToggleLight_Validate()
+{
+	return true;
+}
+
+//Implements code from checking actions
+//NOTE: Both this and the function above are not defined in the header file as they are created from the base function
+void AA2Character::ServerToggleLight_Implementation()
+{
+	if (Role == ROLE_Authority)
+		SetLightActive(!bLightActive);
+}
+
+//Functionality when the light is toggled
+void AA2Character::WasToggled_Implementation()
+{
+	UE_LOG(LogClass, Warning, TEXT("Change the light state %s"), *GetName());
+}
+
+//Add the _Implementation for the code behind the client toggled the light - MULTICAST event
+void AA2Character::ClientOnToggle_Implementation()
+{
+	//Fire the Blueprint Native Event, which itself cannot be replicated
+	WasToggled();
+}
+
+

@@ -197,6 +197,19 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Health")
 		void UpdateHealth(float DeltaHealth);
 
+	//Access to the character's light state
+	UFUNCTION(BlueprintPure, Category = "Light")
+		bool GetLightActive();
+
+	//Set the character's light state
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Light")
+		void SetLightActive(bool NewState);
+
+	//Function to call when light is activated
+	//A blueprint native event allows to put some functionality in blueprint and in C++
+	UFUNCTION(BlueprintNativeEvent, Category = "Light")
+		void WasToggled();
+	virtual void WasToggled_Implementation();
 
 
 
@@ -212,6 +225,18 @@ protected:
 	//Health is updated on clients
 	UFUNCTION()
 		void OnRep_CurrentHealth();
+
+	//Determines whether the players light is on or off
+	UPROPERTY(ReplicatedUsing = OnRep_LightActive, EditAnywhere, BlueprintReadWrite, Category = "Light", Meta = (BlueprintProtected = "true"))
+		bool bLightActive;
+
+	//Player's light is updated on client
+	UFUNCTION()
+		void OnRep_LightActive();
+
+	//Server function for changing light
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerToggleLight();
 
 	//True when the light is on, False when it is off
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interactable", meta = (AllowPrivateAccess = "true"))
@@ -231,6 +256,12 @@ protected:
 	//WithValidation will create two calls - one to validate and one to call implementation
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCheckAction(AInteractable* object);
+
+private:
+	//Client side handling of activating light
+	//The multicast calls out to all servers and clients
+	UFUNCTION(NetMulticast, Unreliable)
+		void ClientOnToggle();
 
 };
 
