@@ -99,3 +99,12 @@ void AA2GameMode::DrainHealthOverTime()
 		}
 	}
 }
+
+//Unlocks a particular door
+void AA2GameMode::UnlockDoor(int keyId) {
+	//Loop through all game objects
+	//Cast to a door
+	//Unlock door if key id is identical
+	UE_LOG(LogClass, Warning, TEXT("Door Unlocked with key: %i"), keyId);
+	//Set the unlocked set of variables to true for HUD
+}

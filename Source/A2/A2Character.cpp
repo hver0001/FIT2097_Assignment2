@@ -341,6 +341,14 @@ void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
 				//Increase health
 				UpdateHealth(healthBoost);
 			}
+			//If it is a key item
+			else if (itemType == EItemTypes::Key) {
+				//Get keyId from the door
+				int keyId = int(item->GetItemValue());
+
+				//Call gamemode to unlock door
+				UE_LOG(LogClass, Warning, TEXT("Key ID = %i"), keyId);
+			}
 		}
 	}
 }

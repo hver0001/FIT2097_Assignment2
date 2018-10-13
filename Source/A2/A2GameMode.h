@@ -25,6 +25,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 		float GetHealthRate();
 
+	//Unlocks a particular door
+	UFUNCTION(BlueprintCallable, Category = "Key")
+		void UnlockDoor(int keyId);
+
 protected:
 	//Stores the rate of the delay that the characters will experience (how often to update)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")

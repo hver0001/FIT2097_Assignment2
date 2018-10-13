@@ -9,7 +9,8 @@
 //Creates an enumerator for the item
 UENUM(BlueprintType) //BlueprintType
 enum class EItemTypes : uint8 {
-	Health 	UMETA(DisplayName = "Health Item")
+	Health UMETA(DisplayName = "Health Item"),
+	Key UMETA(DisplayName = "Door Key")
 };
 
 /**
