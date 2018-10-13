@@ -33,6 +33,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Fuse")
 		void UpdateFuse();
 
+	//Updates all binary code that exist when a switch is pressed
+	UFUNCTION(BlueprintCallable, Category = "Binary")
+		void CheckBinary();
+
 protected:
 	//Stores the rate of the delay that the characters will experience (how often to update)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")

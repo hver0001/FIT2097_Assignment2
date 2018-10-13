@@ -6,6 +6,7 @@
 #include "A2GameState.h"
 #include "Door.h"
 #include "FuseLock.h"
+#include "BinaryLock.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
 
@@ -132,9 +133,22 @@ void AA2GameMode::UpdateFuse() {
 	UWorld* World = GetWorld();
 	check(World);
 
-	//Loop through all game objects that are fuses
+	//Loop through all game objects that are fuse locks
 	for (TActorIterator<AFuseLock> Fuse(World); Fuse; ++Fuse) {		
 		//Update the fuse
 		Fuse->SetFuse();
+	}
+}
+
+//Updates all binary objects
+void AA2GameMode::CheckBinary() {
+	//Get world
+	UWorld* World = GetWorld();
+	check(World);
+
+	//Loop through all game objects that are binary locks
+	for (TActorIterator<ABinaryLock> Binary(World); Binary; ++Binary) {
+		//Check the binary
+		Binary->CheckBinary();
 	}
 }
