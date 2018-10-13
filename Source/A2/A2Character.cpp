@@ -103,6 +103,9 @@ AA2Character::AA2Character()
 
 	//Starts the light as active
 	SetLightActive(true);
+
+	//Starts the fuse collected as false
+	bFuseCollected = false;
 }
 
 void AA2Character::BeginPlay()
@@ -305,6 +308,7 @@ void AA2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(AA2Character, CurrentHealth);
 	DOREPLIFETIME(AA2Character, bLightActive);
+	DOREPLIFETIME(AA2Character, bFuseCollected);
 }
 
 //Function called when the button is pressed for action
@@ -352,9 +356,11 @@ void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
 				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
 					gameMode->UnlockDoor(keyId);
 				}
-				
-				
-				//UE_LOG(LogClass, Warning, TEXT("Key ID = %i"), keyId);
+			}
+			//If it is a fuse item
+			else if (itemType == EItemTypes::Fuse) {
+				//Set the fuse in player to true
+				SetFuse();
 			}
 		}
 	}
@@ -584,4 +590,31 @@ void AA2Character::ClientOnToggle_Implementation()
 	WasToggled();
 }
 
+//Returns whether or not the fuse is collected
+bool AA2Character::GetFuseCollected() {
+	return bFuseCollected;
+}
+
+//Collects a fuse
+void AA2Character::SetFuse() {
+	if (Role == ROLE_Authority) {
+		//Set the fuse to true
+		bFuseCollected = true;
+
+		//Fake the notify function for server
+		OnRep_FuseCollected();
+
+		UE_LOG(LogClass, Warning, TEXT("Test"));
+	}
+}
+
+//Called when the fuse is updated
+void AA2Character::OnRep_FuseCollected() {
+	UE_LOG(LogClass, Warning, TEXT("Fuse was collected"));
+}
+
+//Functionality when the fuse is updated
+void AA2Character::FuseCollected_Implementation() {
+	
+}
 

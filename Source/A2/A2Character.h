@@ -211,6 +211,20 @@ public:
 		void WasToggled();
 	virtual void WasToggled_Implementation();
 
+	//Gets whether or not the fuse has been collected
+	UFUNCTION(BlueprintPure, Category = "Fuse")
+		bool GetFuseCollected();
+
+	//Collect a fuse
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Fuse")
+		void SetFuse();
+
+	//Function to call when the fuse is collected
+	UFUNCTION(BlueprintNativeEvent, Category = "Fuse")
+		void FuseCollected();
+	virtual void FuseCollected_Implementation();
+
+
 
 
 protected:
@@ -225,6 +239,14 @@ protected:
 	//Health is updated on clients
 	UFUNCTION()
 		void OnRep_CurrentHealth();
+
+	//Each player can collect 1 fuse
+	UPROPERTY(ReplicatedUsing = OnRep_FuseCollected, VisibleAnywhere, Category = "Fuse")
+		bool bFuseCollected;
+
+	//When the fuse is collectted
+	UFUNCTION()
+		void OnRep_FuseCollected();
 
 	//Determines whether the players light is on or off
 	UPROPERTY(ReplicatedUsing = OnRep_LightActive, EditAnywhere, BlueprintReadWrite, Category = "Light", Meta = (BlueprintProtected = "true"))
