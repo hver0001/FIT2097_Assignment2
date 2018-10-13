@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Interactable.h"
+#include "Door.h"
 #include "FuseLock.generated.h"
 
 /**
@@ -30,14 +31,19 @@ public:
 		void SetFuse();
 
 	//Function to call when the state of the fuse is updated
-	UFUNCTION(BlueprintNativeEvent, Category = "Door")
+	UFUNCTION(BlueprintNativeEvent, Category = "Fuse")
 		void FuseUpdate();
 	virtual void FuseUpdate_Implementation();
+
 	
 protected:
 	//Stores all possible requirements for the fuse needed
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Fuse", Meta = (BlueprintProtected = "true"))
 		TArray<bool> RequiredFuses;
+
+	//Stores the connected door for when the fuse is completed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Door")
+		ADoor* ConnectedDoor;
 
 private:
 	//Client side handling of fuse state changing

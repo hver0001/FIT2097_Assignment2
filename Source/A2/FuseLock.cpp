@@ -42,13 +42,22 @@ void AFuseLock::SetFuse() {
 
 //Called whenever the fuse state changes
 void AFuseLock::FuseUpdate_Implementation() {
-	
+
 }
 
 //Multicast function for when the fuse state changes
 void AFuseLock::ClientFuseChange_Implementation() {
 	//Fire the Blueprint Native Event, which itself cannot be replicated
 	FuseUpdate();
+
+	//Check to see if fuse has been completed
+	if (RequiredFuses[0] && RequiredFuses[1]) {
+		//Ensure the door has been connected
+		if (ConnectedDoor != NULL) {
+			//Unlock the connected door
+			ConnectedDoor->SetLocked(false);
+		}
+	}
 }
 
 
