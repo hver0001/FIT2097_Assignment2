@@ -30,7 +30,7 @@ AA2GameMode::AA2GameMode()
 
 	//Base health values
 	StartingHealth = 100.f;
-	HealthRate = 0.1f;
+	HealthRate = 0.2f;
 	HealthDrainDelay = 0.1f;
 }
 
