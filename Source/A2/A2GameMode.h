@@ -29,6 +29,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Key")
 		void UnlockDoor(int keyId);
 
+	//Updates the fuse lock when fuses are inserted
+	UFUNCTION(BlueprintCallable, Category = "Fuse")
+		void UpdateFuse();
+
 protected:
 	//Stores the rate of the delay that the characters will experience (how often to update)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")

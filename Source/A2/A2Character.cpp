@@ -14,6 +14,7 @@
 #include "Net/UnrealNetwork.h"
 #include "A2GameMode.h"
 #include "Door.h"
+#include "FuseLock.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -361,6 +362,21 @@ void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
 			else if (itemType == EItemTypes::Fuse) {
 				//Set the fuse in player to true
 				SetFuse();
+			}
+		}
+
+		//Check if the object is a fuse lock
+		if (AFuseLock* fuse = Cast<AFuseLock>(object)) {
+			//If the current fuse has been collecte
+			if (GetFuseCollected()) {
+				//Tell the gamemode to update the fuse lock
+				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+					gameMode->UpdateFuse();
+
+					//Remove fuse from player
+					bFuseCollected = false;
+					OnRep_FuseCollected();
+				}
 			}
 		}
 	}

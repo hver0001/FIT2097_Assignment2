@@ -5,6 +5,7 @@
 #include "A2Character.h"
 #include "A2GameState.h"
 #include "Door.h"
+#include "FuseLock.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
 
@@ -122,5 +123,18 @@ void AA2GameMode::UnlockDoor(int keyId) {
 	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
 		//Set the unlocked set of variables to true for HUD
 		MyGameState->SetKeyValue(keyId - 1, true);
+	}
+}
+
+//Updates all fuse locks
+void AA2GameMode::UpdateFuse() {
+	//Get world
+	UWorld* World = GetWorld();
+	check(World);
+
+	//Loop through all game objects that are fuses
+	for (TActorIterator<AFuseLock> Fuse(World); Fuse; ++Fuse) {		
+		//Update the fuse
+		Fuse->SetFuse();
 	}
 }
