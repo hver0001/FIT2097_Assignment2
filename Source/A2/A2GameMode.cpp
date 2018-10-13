@@ -117,7 +117,10 @@ void AA2GameMode::UnlockDoor(int keyId) {
 			Door->SetLocked(false);
 		}
 	}
-	
-	//TODO
-	//Set the unlocked set of variables to true for HUD
+
+	//Get the game state
+	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
+		//Set the unlocked set of variables to true for HUD
+		MyGameState->SetKeyValue(keyId - 1, true);
+	}
 }
