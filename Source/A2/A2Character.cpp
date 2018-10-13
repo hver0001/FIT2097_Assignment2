@@ -12,6 +12,8 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Net/UnrealNetwork.h"
+#include "A2GameMode.h"
+#include "Door.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -347,7 +349,12 @@ void AA2Character::ServerCheckAction_Implementation(AInteractable* object)
 				int keyId = int(item->GetItemValue());
 
 				//Call gamemode to unlock door
-				UE_LOG(LogClass, Warning, TEXT("Key ID = %i"), keyId);
+				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+					gameMode->UnlockDoor(keyId);
+				}
+				
+				
+				//UE_LOG(LogClass, Warning, TEXT("Key ID = %i"), keyId);
 			}
 		}
 	}

@@ -4,7 +4,9 @@
 #include "A2HUD.h"
 #include "A2Character.h"
 #include "A2GameState.h"
+#include "Door.h"
 #include "UObject/ConstructorHelpers.h"
+#include "EngineUtils.h"
 
 AA2GameMode::AA2GameMode()
 	: Super()
@@ -102,9 +104,20 @@ void AA2GameMode::DrainHealthOverTime()
 
 //Unlocks a particular door
 void AA2GameMode::UnlockDoor(int keyId) {
+	//Get world
+	UWorld* World = GetWorld();
+	check(World);
+
 	//Loop through all game objects
-	//Cast to a door
-	//Unlock door if key id is identical
-	UE_LOG(LogClass, Warning, TEXT("Door Unlocked with key: %i"), keyId);
+	for (TActorIterator<ADoor> Door(World); Door; ++Door) {
+		//Check if key is identical
+		if (Door->GetKeyRequired() == keyId) {
+			UE_LOG(LogClass, Log, TEXT("Door Unlocked with key: %i"), keyId);
+			//Unlock the door
+			Door->SetLocked(false);
+		}
+	}
+	
+	//TODO
 	//Set the unlocked set of variables to true for HUD
 }
