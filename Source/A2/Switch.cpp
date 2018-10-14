@@ -17,6 +17,17 @@ void ASwitch::SetActive(bool NewState)
 	if (ConnectedDoor != NULL) {
 		//Unlock the connected door
 		ConnectedDoor->SetLocked(NewState);
+
+		//If unlocked
+		if (!NewState) {
+			//Only needs to be called on the server
+			if (Role == ROLE_Authority) {
+				//Update information text in gamemode
+				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+					gameMode->UpdateInformationText("A new door is unlocked!");
+				}
+			}
+		}
 	}
 	//If not connected to a door, it could be a binary switch
 	else {

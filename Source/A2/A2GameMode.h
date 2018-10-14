@@ -37,6 +37,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Binary")
 		void CheckBinary();
 
+	//Updates the game state information text
+	UFUNCTION(BlueprintCallable, Category = "Information")
+		void UpdateInformationText(FString NewInfo);
+
 protected:
 	//Stores the rate of the delay that the characters will experience (how often to update)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")

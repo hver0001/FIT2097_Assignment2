@@ -131,6 +131,9 @@ void AA2Character::BeginPlay()
 
 	//Set the starting health to max
 	CurrentHealth = MaxHealth;
+
+	//Check if this character is a server or client
+	bIsServer = (Role == ROLE_Authority);
 }
 
 //////////////////////////////////////////////////////////////////////////

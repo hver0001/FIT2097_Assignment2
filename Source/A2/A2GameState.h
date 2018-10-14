@@ -37,6 +37,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Keys")
 		void SetKeyValue(int keyIndex, bool bValue);
 
+	//Sets the information text - e.g "A door has been opened"
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Information")
+		FString InformationText;
+
+	//Updates the information text
+	UFUNCTION(BlueprintCallable, Category = "Information")
+		void SetInformation(FString NewInfo);
+
 	//This function is required for networking
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	

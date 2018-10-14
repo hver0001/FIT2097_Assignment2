@@ -7,6 +7,8 @@
 AA2GameState::AA2GameState() {
 	//Initialise the key set
 	KeySet = { false, false, false };
+
+	InformationText = "You're trapped! Work together to find a way out...";
 }
 
 //Set networked variables
@@ -17,7 +19,8 @@ void AA2GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	//Allow variables to be replicated
 	DOREPLIFETIME(AA2GameState, MaxHealth);
-	DOREPLIFETIME(AA2GameState, KeySet)
+	DOREPLIFETIME(AA2GameState, KeySet);
+	DOREPLIFETIME(AA2GameState, InformationText);
 }
 
 //Return the max health
@@ -36,3 +39,12 @@ void AA2GameState::SetKeyValue(int keyIndex, bool bValue)
 	KeySet[keyIndex] = bValue;
 }
 
+
+//Sets the new information
+void AA2GameState::SetInformation(FString NewInfo)
+{
+	InformationText = NewInfo;
+
+	//Create a timer to remove text after a specified amount of time
+	//Cancel previous timer
+}

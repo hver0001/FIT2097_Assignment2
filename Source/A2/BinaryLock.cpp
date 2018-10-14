@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BinaryLock.h"
+#include "A2GameMode.h"
 #include "Net/UnrealNetwork.h"
 
 //Constructor
@@ -76,5 +77,16 @@ void ABinaryLock::ClientOnComplete_Implementation()
 	if (ConnectedDoor != NULL) {
 		//Lock or unlock the door depending if the binary has been completed
 		ConnectedDoor->SetLocked(!bIsComplete);
+
+		//If the door is complete
+		if (bIsComplete) {
+			//Will be called twice, but only needs to call on server
+			if (Role == ROLE_Authority) {
+				//Update information text in gamemode
+				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+					gameMode->UpdateInformationText("The binary code is correct - A new door is unlocked!");
+				}
+			}
+		}
 	}
 }

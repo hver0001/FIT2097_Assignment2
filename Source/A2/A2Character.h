@@ -224,7 +224,9 @@ public:
 		void FuseCollected();
 	virtual void FuseCollected_Implementation();
 
-
+	//Stores whether the character is a server or client.
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Information")
+		bool bIsServer;
 
 
 protected:

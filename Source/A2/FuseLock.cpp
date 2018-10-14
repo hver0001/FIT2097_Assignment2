@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FuseLock.h"
+#include "A2GameMode.h"
 #include "Net/UnrealNetwork.h"
 
 //Constructor
@@ -56,6 +57,14 @@ void AFuseLock::ClientFuseChange_Implementation() {
 		if (ConnectedDoor != NULL) {
 			//Unlock the connected door
 			ConnectedDoor->SetLocked(false);
+
+			//Will be called twice, but only needs to call on server
+			if (Role == ROLE_Authority) {
+				//Update information text in gamemode
+				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+					gameMode->UpdateInformationText("The fuse lock is complete - A new door is unlocked!");
+				}
+			}
 		}
 	}
 }

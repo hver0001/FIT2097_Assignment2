@@ -117,6 +117,9 @@ void AA2GameMode::UnlockDoor(int keyId) {
 			UE_LOG(LogClass, Log, TEXT("Door Unlocked with key: %i"), keyId);
 			//Unlock the door
 			Door->SetLocked(false);
+
+			//Output an update on the state
+			UpdateInformationText("A key has been found! A new door has been unlocked!");
 		}
 	}
 
@@ -150,5 +153,13 @@ void AA2GameMode::CheckBinary() {
 	for (TActorIterator<ABinaryLock> Binary(World); Binary; ++Binary) {
 		//Check the binary
 		Binary->CheckBinary();
+	}
+}
+
+//Updates the information text on the game state
+void AA2GameMode::UpdateInformationText(FString NewInfo) {
+	//Checks to see if game state exists
+	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
+		MyGameState->SetInformation(NewInfo);
 	}
 }
