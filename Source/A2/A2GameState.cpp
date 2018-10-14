@@ -8,7 +8,8 @@ AA2GameState::AA2GameState() {
 	//Initialise the key set
 	KeySet = { false, false, false };
 
-	InformationText = "You're trapped! Work together to find a way out...";
+	//Set initial information text
+	SetInformation("You're trapped! Work together to find a way out...");
 }
 
 //Set networked variables
@@ -44,7 +45,10 @@ void AA2GameState::SetKeyValue(int keyIndex, bool bValue)
 void AA2GameState::SetInformation(FString NewInfo)
 {
 	InformationText = NewInfo;
+}
 
-	//Create a timer to remove text after a specified amount of time
-	//Cancel previous timer
+//Clears the information text after the timer runs out
+void AA2GameState::ClearInformationText() {
+	//Clear text
+	InformationText = "";
 }

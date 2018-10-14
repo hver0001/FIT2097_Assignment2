@@ -34,6 +34,7 @@ AA2GameMode::AA2GameMode()
 	StartingHealth = 100.f;
 	HealthRate = 0.2f;
 	HealthDrainDelay = 0.1f;
+	InformationTextRemoveDelay = 5.0f;
 }
 
 void AA2GameMode::BeginPlay() {
@@ -161,5 +162,18 @@ void AA2GameMode::UpdateInformationText(FString NewInfo) {
 	//Checks to see if game state exists
 	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
 		MyGameState->SetInformation(NewInfo);
+	}
+
+	//Cancel previous timer
+	GetWorldTimerManager().ClearTimer(InformationTextRemoveTimer);
+
+	//Create a timer to remove text after a specified amount of time
+	GetWorldTimerManager().SetTimer(InformationTextRemoveTimer, this, &AA2GameMode::ClearInformationText, InformationTextRemoveDelay, false);	
+}
+
+//Clear the information text in the game state
+void AA2GameMode::ClearInformationText() {
+	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
+		MyGameState->ClearInformationText();
 	}
 }

@@ -45,9 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Information")
 		void SetInformation(FString NewInfo);
 
+	//Clears the information text after the timer runs out
+	UFUNCTION(BlueprintCallable, Category = "Information")
+		void ClearInformationText();
+
 	//This function is required for networking
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
 	
 	
 };

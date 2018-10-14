@@ -57,9 +57,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health", Meta = (BlueprintProtected = "true"))
 		float HealthRate;
 
+	//Access the timer for removing the text from the screen after a period of time
+	FTimerHandle InformationTextRemoveTimer;
+
+	//The time it takes for text to be removed
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Information", Meta = (BlueprintProtected = "true"))
+		float InformationTextRemoveDelay;
+
 private:
 	//Drains health from characters and updates gameplay
 	void DrainHealthOverTime();
+
+	//Clears the information text from the game state
+	UFUNCTION()
+		void ClearInformationText();
 };
 
 
