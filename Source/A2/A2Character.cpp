@@ -171,6 +171,7 @@ void AA2Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputC
 
 	//Input for button functionality
 	InputComponent->BindAction("Action", IE_Pressed, this, &AA2Character::CheckAction);
+	InputComponent->BindAction("Pause", IE_Pressed, this, &AA2Character::PauseGame);
 }
 
 void AA2Character::OnResetVR()
@@ -666,6 +667,16 @@ void AA2Character::OnRep_SetGameState_Implementation(EGameState NewGameState)
 			HUD->LossGame();
 		}
 	}
+
+	//For the client (not server)
+	if (Role != ROLE_Authority) {
+		//Get game world
+		UWorld* World = GetWorld();
+		check(World);
+
+		//Pause or Resume the game (as the game mode only did this on its own device)
+		UGameplayStatics::SetGamePaused(World, NewGameState != EGameState::Playing);
+	}
 }
 
 bool AA2Character::ServerSetGameState_Validate(EGameState NewGameState)
@@ -686,6 +697,11 @@ void AA2Character::ServerSetGameState_Implementation(EGameState NewGameState)
 
 //Calls HUD to set new game state
 void AA2Character::SetGameState(EGameState NewGameState) {
-	UE_LOG(LogClass, Warning, TEXT("LMAO"));
 	ServerSetGameState(NewGameState);
+}
+
+
+//Pauses the game from character controls
+void AA2Character::PauseGame() {
+	ServerSetGameState(EGameState::Paused);
 }

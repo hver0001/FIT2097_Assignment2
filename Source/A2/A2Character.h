@@ -297,6 +297,10 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 		void OnRep_SetGameState(EGameState NewGameState);
 
+	//Pauses to game (from character controls)
+	UFUNCTION(BlueprintCallable, Category = "State")
+		void PauseGame();
+
 	//Stores whether the character is a server or client.
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Information")
 		bool bIsServer;
