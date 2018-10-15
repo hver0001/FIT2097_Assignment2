@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Engine.h"
+#include "Door.h"
 #include "GameFramework/Actor.h"
 #include "Pressure.generated.h"
 
@@ -62,6 +63,10 @@ protected:
 	//Called whenever IsActive is updated
 	UFUNCTION()
 		virtual void OnRep_IsActive();
+
+	//Stores the connected door for when the pressure plate is pressed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Door")
+		ADoor* ConnectedDoor;
 
 private:
 	//Client side handling of being picked up

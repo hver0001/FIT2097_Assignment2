@@ -69,8 +69,8 @@ void ADoor::ClientOnUnlock_Implementation()
 //Same function as interactable one, but check if door is locked or not to activate door
 void ADoor::SetActive(bool NewState)
 {
-	//Only if the door is unlocked
-	if (!bIsLocked) {
+	//Only if the door is unlocked or attempting to close the door
+	if (!bIsLocked || !NewState) {
 		//Call the interactable function
 		Super::SetActive(NewState);
 	}

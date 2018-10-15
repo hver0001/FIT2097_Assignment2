@@ -2,6 +2,7 @@
 
 #include "Pressure.h"
 #include "A2Character.h"
+#include "A2GameMode.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -102,4 +103,27 @@ void APressure::ClientOnToggle_Implementation()
 {
 	//Fire the Blueprint Native Event, which itself cannot be replicated
 	WasToggled();
+
+	//Ensure the door has been connected
+	if (ConnectedDoor != NULL) {
+		//Lock or unlock the door depending if the pressure plate has been stepped on
+		ConnectedDoor->SetLocked(!bIsActive);
+
+		//Ensure no discrepancy with opening and closing door
+		if (ConnectedDoor->IsActive() == !bIsActive) {
+			//Open or close the door
+			ConnectedDoor->SetActive(bIsActive);
+		}
+
+		//If the door is complete
+		if (bIsActive) {
+			//Will be called twice, but only needs to call on server
+			if (Role == ROLE_Authority) {
+				//Update information text in gamemode
+				if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+					gameMode->UpdateInformationText("A pressure plate has been activated - A door has been opened!");
+				}
+			}
+		}
+	}
 }

@@ -78,7 +78,7 @@ void ABinaryLock::ClientOnComplete_Implementation()
 		//Lock or unlock the door depending if the binary has been completed
 		ConnectedDoor->SetLocked(!bIsComplete);
 
-		//If the door is complete
+		//If the lock is complete
 		if (bIsComplete) {
 			//Will be called twice, but only needs to call on server
 			if (Role == ROLE_Authority) {
