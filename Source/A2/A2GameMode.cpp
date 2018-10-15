@@ -105,7 +105,8 @@ void AA2GameMode::DrainHealthOverTime()
 					Character->UpdateHealth(-HealthRate);
 				}
 				else { //No health left of the character
-
+					//Change to a loss game state
+					SetGameState(EGameState::Dead);
 				}
 			}
 		}
