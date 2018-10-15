@@ -41,6 +41,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Information")
 		void UpdateInformationText(FString NewInfo);
 
+	//Pauses/Resumes the game (stops character and variables from changing)
+	UFUNCTION(BlueprintCallable, Category = "State")
+		void TogglePause();
+
+
 protected:
 	//Stores the rate of the delay that the characters will experience (how often to update)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")
@@ -63,6 +68,10 @@ protected:
 	//The time it takes for text to be removed
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Information", Meta = (BlueprintProtected = "true"))
 		float InformationTextRemoveDelay;
+
+	//Stores whether the game is paused or not
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "State", Meta = (BlueprintProtected = "true"))
+		bool bIsPaused;
 
 private:
 	//Drains health from characters and updates gameplay

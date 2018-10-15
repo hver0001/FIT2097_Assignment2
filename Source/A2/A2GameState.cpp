@@ -10,6 +10,8 @@ AA2GameState::AA2GameState() {
 
 	//Set initial information text
 	SetInformation("You're trapped! Work together to find a way out...");
+
+	CurrentGameState = EGameState::Start;
 }
 
 //Set networked variables
@@ -19,9 +21,20 @@ void AA2GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	//Allow variables to be replicated
+	DOREPLIFETIME(AA2GameState, CurrentGameState);
 	DOREPLIFETIME(AA2GameState, MaxHealth);
 	DOREPLIFETIME(AA2GameState, KeySet);
 	DOREPLIFETIME(AA2GameState, InformationText);
+}
+
+//Sets a new game state
+void AA2GameState::SetGameState(EGameState NewGameState) {
+	CurrentGameState = NewGameState;
+}
+
+//Gets the current game state
+EGameState AA2GameState::GetGameState() {
+	return CurrentGameState;
 }
 
 //Return the max health
@@ -40,6 +53,10 @@ void AA2GameState::SetKeyValue(int keyIndex, bool bValue)
 	KeySet[keyIndex] = bValue;
 }
 
+//Gets the information text
+FString AA2GameState::GetInformationText() {
+	return InformationText;
+}
 
 //Sets the new information
 void AA2GameState::SetInformation(FString NewInfo)

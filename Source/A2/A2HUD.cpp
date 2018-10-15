@@ -33,3 +33,13 @@ void AA2HUD::DrawHUD()
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem( TileItem );
 }
+
+//Called when the game is resumed
+void AA2HUD::ResumeGame_Implementation() {
+
+}
+
+//Called when the game is paused
+void AA2HUD::PauseGame_Implementation() {
+
+}

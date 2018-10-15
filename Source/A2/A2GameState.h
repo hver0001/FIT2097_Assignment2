@@ -6,6 +6,17 @@
 #include "GameFramework/GameStateBase.h"
 #include "A2GameState.generated.h"
 
+
+//Creates an enumerator for the different game states
+UENUM(BlueprintType) //BlueprintType
+enum class EGameState : uint8 {
+	Start		UMETA(DisplayName = "Start Menu"),
+	Playing		UMETA(DisplayName = "Game Menu"),
+	Paused		UMETA(DisplayName = "Pause Menu"),
+	Dead		UMETA(DisplayName = "Loss Menu"),
+	Won			UMETA(DisplayName = "Win Menu")
+};
+
 /**
  * 
  */
@@ -37,9 +48,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Keys")
 		void SetKeyValue(int keyIndex, bool bValue);
 
-	//Sets the information text - e.g "A door has been opened"
+	//Stores the information text - e.g "A door has been opened"
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Information")
 		FString InformationText;
+
+	//Sets the information text
+	UFUNCTION(BlueprintCallable, Category = "Information")
+		FString GetInformationText();
 
 	//Updates the information text
 	UFUNCTION(BlueprintCallable, Category = "Information")
@@ -52,5 +67,15 @@ public:
 	//This function is required for networking
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	
+	//Stores the current game state of the game (playing, death, ect)
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "State")
+		EGameState CurrentGameState;
+
+	//Sets a new game state
+	UFUNCTION(BlueprintCallable, Category = "State")
+		void SetGameState(EGameState NewGameState);
+
+	//Gets the game satte
+	UFUNCTION(BlueprintCallable, Category = "State")
+		EGameState GetGameState();
 };

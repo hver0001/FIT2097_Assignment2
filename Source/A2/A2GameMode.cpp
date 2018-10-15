@@ -22,7 +22,8 @@ AA2GameMode::AA2GameMode()
 	static ConstructorHelpers::FClassFinder<AA2HUD>PlayerHUDClass(TEXT("/Game/Blueprints/BP_HUD"));
 	if (PlayerHUDClass.Class != NULL) {
 		HUDClass = PlayerHUDClass.Class;
-	}
+	} else
+		UE_LOG(LogClass, Error, TEXT("FAILED: HUD failed to set in %s!"), *this->GetName());
 
 	//Set the GameState used in the game
 	GameStateClass = AA2GameState::StaticClass();
@@ -35,9 +36,13 @@ AA2GameMode::AA2GameMode()
 	HealthRate = 0.2f;
 	HealthDrainDelay = 0.1f;
 	InformationTextRemoveDelay = 5.0f;
+
+	//Starts the game as unpaused
+	bIsPaused = false;
 }
 
 void AA2GameMode::BeginPlay() {
+
 	//Set the recurring timer
 	GetWorldTimerManager().SetTimer(HealthDrainTimer, this, &AA2GameMode::DrainHealthOverTime, HealthDrainDelay, true);
 
@@ -64,6 +69,9 @@ void AA2GameMode::BeginPlay() {
 			}
 		}
 	}
+
+	//Pause the game initially
+	TogglePause();
 }
 
 //Return the initial health of the players
@@ -169,6 +177,37 @@ void AA2GameMode::UpdateInformationText(FString NewInfo) {
 
 	//Create a timer to remove text after a specified amount of time
 	GetWorldTimerManager().SetTimer(InformationTextRemoveTimer, this, &AA2GameMode::ClearInformationText, InformationTextRemoveDelay, false);	
+}
+
+//Pauses the game
+void AA2GameMode::TogglePause()
+{
+	//Flips the is paused sign
+	bIsPaused = !bIsPaused;
+
+	//Get world
+	UWorld* World = GetWorld();
+	check(World);
+
+	//Pause or resume the game
+	if (!bIsPaused) {
+		if (AA2HUD* HUD = Cast<AA2HUD>(HUDClass)) {
+			//Resume the game from a HUD perspective
+			HUD->ResumeGame();
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("Resume"));
+		}
+	}
+	else {
+		if (AA2HUD* HUD = Cast<AA2HUD>(HUDClass)) {
+			//Resume the game from a HUD perspective
+			HUD->PauseGame();
+		}
+	}
+
+	//Pause the game world
+	UGameplayStatics::SetGamePaused(World, bIsPaused);
 }
 
 //Clear the information text in the game state
