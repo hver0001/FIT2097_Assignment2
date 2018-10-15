@@ -670,12 +670,13 @@ void AA2Character::OnRep_SetGameState_Implementation(EGameState NewGameState)
 
 	//For the client (not server)
 	if (Role != ROLE_Authority) {
+
 		//Get game world
 		UWorld* World = GetWorld();
 		check(World);
 
 		//Pause or Resume the game (as the game mode only did this on its own device)
-		UGameplayStatics::SetGamePaused(World, NewGameState != EGameState::Playing);
+		UGameplayStatics::SetGamePaused(World, true);
 	}
 }
 
