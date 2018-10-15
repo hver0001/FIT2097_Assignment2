@@ -643,7 +643,7 @@ bool AA2Character::GetIsServer() {
 }
 
 //Sets the pause or resume state (for HUD purposes)
-void AA2Character::SetGameState(EGameState NewGameState) {
+void AA2Character::UpdateGameState(EGameState NewGameState) {
 	if (Role == ROLE_Authority) {
 		OnRep_SetGameState(NewGameState);
 	}
@@ -659,5 +659,33 @@ void AA2Character::OnRep_SetGameState_Implementation(EGameState NewGameState)
 		else if (NewGameState == EGameState::Playing){
 			HUD->ResumeGame();
 		}
+		else if (NewGameState == EGameState::Won) {
+			HUD->WinGame();
+		}
+		else if (NewGameState == EGameState::Dead) {
+			HUD->LossGame();
+		}
 	}
+}
+
+bool AA2Character::ServerSetGameState_Validate(EGameState NewGameState)
+{
+	return true;
+}
+
+//Implements code from checking actions
+void AA2Character::ServerSetGameState_Implementation(EGameState NewGameState)
+{
+	//Update the HUD game state
+	if (Role == ROLE_Authority) {
+		if (AA2GameMode* const gameMode = Cast<AA2GameMode>(GetWorld()->GetAuthGameMode())) {
+			gameMode->SetGameState(NewGameState);
+		}
+	}
+}
+
+//Calls HUD to set new game state
+void AA2Character::SetGameState(EGameState NewGameState) {
+	UE_LOG(LogClass, Warning, TEXT("LMAO"));
+	ServerSetGameState(NewGameState);
 }

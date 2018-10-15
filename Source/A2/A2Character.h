@@ -225,9 +225,13 @@ public:
 		void FuseCollected();
 	virtual void FuseCollected_Implementation();
 
-	//Sets the paused value of the character (for HUD)
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "State")
+	//Sets the new game state from HUD calls
+	UFUNCTION(BlueprintCallable, Category = "State")
 		void SetGameState(EGameState NewGameState);
+
+	//Sets the new game state (from server), for HUD
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "State")
+		void UpdateGameState(EGameState NewGameState);
 
 	//Returns whether the character is a server or not
 	UFUNCTION(BlueprintPure, Category = "Server")
@@ -284,6 +288,10 @@ protected:
 	//WithValidation will create two calls - one to validate and one to call implementation
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCheckAction(AInteractable* object);
+
+	//Sets the new game state to server
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerSetGameState(EGameState NewGameState);
 
 	//Update state on clients
 	UFUNCTION(NetMulticast, Reliable)

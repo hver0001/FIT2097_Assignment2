@@ -27,6 +27,16 @@ public:
 		void ResumeGame();
 	virtual void ResumeGame_Implementation();
 
+	//Loads win screen
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
+		void WinGame();
+	virtual void WinGame_Implementation();
+
+	//Loads loss screen
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
+		void LossGame();
+	virtual void LossGame_Implementation();
+
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;

@@ -43,3 +43,13 @@ void AA2HUD::ResumeGame_Implementation() {
 void AA2HUD::PauseGame_Implementation() {
 
 }
+
+//Called when the game is won
+void AA2HUD::WinGame_Implementation() {
+
+}
+
+//Called when the game is lost
+void AA2HUD::LossGame_Implementation() {
+
+}

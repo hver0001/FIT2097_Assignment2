@@ -195,7 +195,7 @@ void AA2GameMode::SetGameState(EGameState NewGameState)
 			//Attempt to check for a controller using a cast
 			if (AA2Character* Character = Cast<AA2Character>(PlayerController->GetPawn()))
 			{
-				Character->SetGameState(CurrentGameState);
+				Character->UpdateGameState(CurrentGameState);
 			}
 		}
 	}
