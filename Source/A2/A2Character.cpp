@@ -15,6 +15,7 @@
 #include "A2GameMode.h"
 #include "Door.h"
 #include "FuseLock.h"
+#include "A2HUD.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -637,3 +638,26 @@ void AA2Character::FuseCollected_Implementation() {
 	
 }
 
+bool AA2Character::GetIsServer() {
+	return bIsServer;
+}
+
+//Sets the pause or resume state (for HUD purposes)
+void AA2Character::SetGameState(EGameState NewGameState) {
+	if (Role == ROLE_Authority) {
+		OnRep_SetGameState(NewGameState);
+	}
+}
+
+//Implements the multicast call
+void AA2Character::OnRep_SetGameState_Implementation(EGameState NewGameState)
+{
+	if (AA2HUD* HUD = Cast<AA2HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD())) {
+		if (NewGameState == EGameState::Paused) {
+			HUD->PauseGame();
+		}
+		else if (NewGameState == EGameState::Playing){
+			HUD->ResumeGame();
+		}
+	}
+}

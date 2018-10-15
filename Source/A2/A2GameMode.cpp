@@ -22,8 +22,7 @@ AA2GameMode::AA2GameMode()
 	static ConstructorHelpers::FClassFinder<AA2HUD>PlayerHUDClass(TEXT("/Game/Blueprints/BP_HUD"));
 	if (PlayerHUDClass.Class != NULL) {
 		HUDClass = PlayerHUDClass.Class;
-	} else
-		UE_LOG(LogClass, Error, TEXT("FAILED: HUD failed to set in %s!"), *this->GetName());
+	}
 
 	//Set the GameState used in the game
 	GameStateClass = AA2GameState::StaticClass();
@@ -38,7 +37,7 @@ AA2GameMode::AA2GameMode()
 	InformationTextRemoveDelay = 5.0f;
 
 	//Starts the game as unpaused
-	bIsPaused = false;
+	CurrentGameState = EGameState::Start;
 }
 
 void AA2GameMode::BeginPlay() {
@@ -71,7 +70,7 @@ void AA2GameMode::BeginPlay() {
 	}
 
 	//Pause the game initially
-	TogglePause();
+	SetGameState(EGameState::Start);
 }
 
 //Return the initial health of the players
@@ -179,35 +178,30 @@ void AA2GameMode::UpdateInformationText(FString NewInfo) {
 	GetWorldTimerManager().SetTimer(InformationTextRemoveTimer, this, &AA2GameMode::ClearInformationText, InformationTextRemoveDelay, false);	
 }
 
-//Pauses the game
-void AA2GameMode::TogglePause()
+//Change the state of the game
+void AA2GameMode::SetGameState(EGameState NewGameState)
 {
-	//Flips the is paused sign
-	bIsPaused = !bIsPaused;
+	//Change the game state
+	CurrentGameState = NewGameState;
 
 	//Get world
 	UWorld* World = GetWorld();
 	check(World);
 
-	//Pause or resume the game
-	if (!bIsPaused) {
-		if (AA2HUD* HUD = Cast<AA2HUD>(HUDClass)) {
-			//Resume the game from a HUD perspective
-			HUD->ResumeGame();
-		}
-		else {
-			UE_LOG(LogClass, Warning, TEXT("Resume"));
-		}
-	}
-	else {
-		if (AA2HUD* HUD = Cast<AA2HUD>(HUDClass)) {
-			//Resume the game from a HUD perspective
-			HUD->PauseGame();
+	//Go through all the characters in the game using a unreal function
+	for (FConstControllerIterator It = World->GetControllerIterator(); It; ++It) {
+		//Attempt to check for a player controller using a cast
+		if (APlayerController* PlayerController = Cast<APlayerController>(*It)) {
+			//Attempt to check for a controller using a cast
+			if (AA2Character* Character = Cast<AA2Character>(PlayerController->GetPawn()))
+			{
+				Character->SetGameState(CurrentGameState);
+			}
 		}
 	}
-
+	
 	//Pause the game world
-	UGameplayStatics::SetGamePaused(World, bIsPaused);
+	UGameplayStatics::SetGamePaused(World, CurrentGameState != EGameState::Playing);
 }
 
 //Clear the information text in the game state

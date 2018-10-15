@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Interactable.h"
 #include "Item.h"
+#include "A2GameState.h"
 #include "A2Character.generated.h"
 
 class UInputComponent;
@@ -224,10 +225,13 @@ public:
 		void FuseCollected();
 	virtual void FuseCollected_Implementation();
 
-	//Stores whether the character is a server or client.
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Information")
-		bool bIsServer;
+	//Sets the paused value of the character (for HUD)
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "State")
+		void SetGameState(EGameState NewGameState);
 
+	//Returns whether the character is a server or not
+	UFUNCTION(BlueprintPure, Category = "Server")
+		bool GetIsServer();
 
 protected:
 	//Stores the character's health (not editable anywhere else)
@@ -280,6 +284,14 @@ protected:
 	//WithValidation will create two calls - one to validate and one to call implementation
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCheckAction(AInteractable* object);
+
+	//Update state on clients
+	UFUNCTION(NetMulticast, Reliable)
+		void OnRep_SetGameState(EGameState NewGameState);
+
+	//Stores whether the character is a server or client.
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Information")
+		bool bIsServer;
 
 private:
 	//Client side handling of activating light

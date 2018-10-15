@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Engine.h"
+#include "A2GameState.h"
 #include "GameFramework/GameModeBase.h"
 #include "A2GameMode.generated.h"
 
@@ -43,7 +44,7 @@ public:
 
 	//Pauses/Resumes the game (stops character and variables from changing)
 	UFUNCTION(BlueprintCallable, Category = "State")
-		void TogglePause();
+		void SetGameState(EGameState NewGameState);
 
 
 protected:
@@ -71,7 +72,7 @@ protected:
 
 	//Stores whether the game is paused or not
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "State", Meta = (BlueprintProtected = "true"))
-		bool bIsPaused;
+		EGameState CurrentGameState;
 
 private:
 	//Drains health from characters and updates gameplay
