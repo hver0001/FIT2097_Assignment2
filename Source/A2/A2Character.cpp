@@ -653,6 +653,7 @@ void AA2Character::UpdateGameState(EGameState NewGameState) {
 //Implements the multicast call
 void AA2Character::OnRep_SetGameState_Implementation(EGameState NewGameState)
 {
+	//Get the HUD
 	if (AA2HUD* HUD = Cast<AA2HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD())) {
 		if (NewGameState == EGameState::Paused) {
 			HUD->PauseGame();
@@ -676,7 +677,7 @@ void AA2Character::OnRep_SetGameState_Implementation(EGameState NewGameState)
 		check(World);
 
 		//Pause or Resume the game (as the game mode only did this on its own device)
-		UGameplayStatics::SetGamePaused(World, true);
+		UGameplayStatics::SetGamePaused(World, NewGameState != EGameState::Playing);
 	}
 }
 
