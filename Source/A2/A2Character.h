@@ -270,11 +270,11 @@ protected:
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerToggleLight();
 
-	//True when the light is on, False when it is off
+	//Holds the current interactable object being ray traced
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interactable", meta = (AllowPrivateAccess = "true"))
 		AInteractable* CurrentInteractable;
 
-	//Change the lamp state
+	//Change the current item being ray traced
 	UFUNCTION(BlueprintCallable, Category = "Interactable")
 		void SetInteractable(AInteractable* NewInteractable);
 
