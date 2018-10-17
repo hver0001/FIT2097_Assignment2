@@ -37,6 +37,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Interactable")
 		FString GetInteractableName();
 
+	//Gets the interactble available text
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+		FString GetAvailableText();
+
+	//Gets the interactble unavailable text
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+		FString GetUnavailableText();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,6 +65,14 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interactable")
 		FString InteractableName;
+
+	//Holds text for if the player can do something
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Iteractable")
+		FString AvailableText;
+
+	//Holds text for if the player cannot do something
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Iteractable")
+		FString UnavailableText;
 
 private:
 	//Client side handling of being picked up

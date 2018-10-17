@@ -20,6 +20,9 @@ AInteractable::AInteractable()
 	//Starts the interactable to be active if needed
 	SetActive(bStartActive);
 
+	AvailableText = "Press F to interact";
+	UnavailableText = "This door is locked!";
+
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +62,18 @@ void AInteractable::SetActive(bool NewState)
 FString AInteractable::GetInteractableName()
 {
 	return InteractableName;
+}
+
+//Get the available text
+FString AInteractable::GetAvailableText()
+{
+	return AvailableText;
+}
+
+//Get unavailable text
+FString AInteractable::GetUnavailableText()
+{
+	return UnavailableText;
 }
 
 //This is called whenever the active boolean is updated

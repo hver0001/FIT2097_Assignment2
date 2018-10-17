@@ -15,6 +15,7 @@
 #include "A2GameMode.h"
 #include "Door.h"
 #include "FuseLock.h"
+#include "BinaryLock.h"
 #include "A2HUD.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -102,6 +103,8 @@ AA2Character::AA2Character()
 	}
 
 	MaxHealth = 100.f;
+
+	CurrentInteractableText = "";
 
 	//Starts the light as active
 	SetLightActive(true);
@@ -514,12 +517,49 @@ void AA2Character::ProcessTraceHit(FHitResult& HitOut)
 
 		// Set a local variable of the PickupName for the HUD
 		TraceName = TestObject->GetInteractableName();
+
+		//Check different interactable types:
+		//Check for door
+		if (ADoor* const TestDoor = Cast<ADoor>(TestObject)) {
+			//Check if it is locked or not
+			if (TestDoor->IsLocked())
+				CurrentInteractableText = TestDoor->GetUnavailableText();
+			else
+				CurrentInteractableText = TestDoor->GetAvailableText();
+		}
+		//Check for fuse lock
+		else if (AFuseLock* const TestFuse = Cast<AFuseLock>(TestObject)) {
+			//Check if a fuse exists in player
+			if (!bFuseCollected)
+				CurrentInteractableText = TestFuse->GetUnavailableText();
+			else
+				CurrentInteractableText = TestFuse->GetAvailableText();
+		}
+		//Check for binary lock
+		else if (ABinaryLock* const TestBinary = Cast<ABinaryLock>(TestObject)) {
+			//Check if it is locked or not
+			if (TestBinary->IsComplete())
+				CurrentInteractableText = TestBinary->GetUnavailableText();
+			else
+				CurrentInteractableText = TestBinary->GetAvailableText();
+		}
+		//When in doubt, just output text depending on active state
+		else {
+			//Check if it is locked or not
+			if (TestObject->IsActive())
+				CurrentInteractableText = TestObject->GetUnavailableText();
+			else
+				CurrentInteractableText = TestObject->GetAvailableText();
+		}
+
+		//Check for 
 	}
 }
 
 //Clears previous trace information
 void AA2Character::ClearTraceInfo() {
 	TraceName = "";
+	CurrentInteractableText = "";
 	SetInteractable(NULL);
 }
 
@@ -641,6 +681,12 @@ void AA2Character::FuseCollected_Implementation() {
 
 bool AA2Character::GetIsServer() {
 	return bIsServer;
+}
+
+//Gets the current interactable text
+FString AA2Character::GetInteractableText()
+{
+	return CurrentInteractableText;
 }
 
 //Sets the pause or resume state (for HUD purposes)

@@ -237,6 +237,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Server")
 		bool GetIsServer();
 
+	//Returns the current interactable text
+	UFUNCTION(BlueprintPure, Category = "Information")
+		FString GetInteractableText();
+
 protected:
 	//Stores the character's health (not editable anywhere else)
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth, VisibleAnywhere, Category = "Health")
@@ -304,6 +308,10 @@ protected:
 	//Stores whether the character is a server or client.
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Information")
 		bool bIsServer;
+
+	//Stores the current text highlighted from the ray cast
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Information")
+		FString CurrentInteractableText;
 
 private:
 	//Client side handling of activating light
