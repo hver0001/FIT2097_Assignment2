@@ -46,6 +46,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "State")
 		void SetGameState(EGameState NewGameState);
 
+	//Changes the number of players in end zone and checks to see if won
+	UFUNCTION(BlueprintCallable, Category = "State")
+		void SetEndPlayerCount(int DeltaPlayers);
+
 
 protected:
 	//Stores the rate of the delay that the characters will experience (how often to update)
@@ -73,6 +77,10 @@ protected:
 	//Stores whether the game is paused or not
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "State", Meta = (BlueprintProtected = "true"))
 		EGameState CurrentGameState;
+
+	//Stores current number of players in end zone
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Win", Meta = (BlueprintProtected = "true"))
+		int EndPlayerCount;
 
 private:
 	//Drains health from characters and updates gameplay

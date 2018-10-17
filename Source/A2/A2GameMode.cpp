@@ -30,11 +30,12 @@ AA2GameMode::AA2GameMode()
 		UE_LOG(LogTemp, Error, TEXT("FAILED: GameState failed to set in %s!"), *this->GetName());
 	}
 
-	//Base health values
+	//Base values
 	StartingHealth = 100.f;
 	HealthRate = 0.05f;
 	HealthDrainDelay = 0.1f;
 	InformationTextRemoveDelay = 5.0f;
+	EndPlayerCount = 0;
 
 	//Starts the game as unpaused
 	CurrentGameState = EGameState::Start;
@@ -209,5 +210,16 @@ void AA2GameMode::SetGameState(EGameState NewGameState)
 void AA2GameMode::ClearInformationText() {
 	if (AA2GameState* MyGameState = Cast<AA2GameState>(GameState)) {
 		MyGameState->ClearInformationText();
+	}
+}
+
+//Changes the number of players at end of game zone and checks to see if both players are completed
+void AA2GameMode::SetEndPlayerCount(int DeltaPlayers) {
+	EndPlayerCount += DeltaPlayers;
+
+	//If both players are in zone
+	if (EndPlayerCount == 2) {
+		//Change game mode state to win
+		SetGameState(EGameState::Won);
 	}
 }
